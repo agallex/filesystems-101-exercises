@@ -27,9 +27,9 @@ void ps(void)
         return;
     }
 
-    char* exe = (char*) malloc(EXE_MAX_LENGTH); // allocation exe
-    char** argv = (char**) calloc(MAX_ARG, sizeof(char*)); // allocation argv
-    char** envp = (char**) calloc(MAX_ARG, sizeof(char*)); // allocation envp
+    char* exe = (char*) calloc(EXE_MAX_LENGTH, sizeof(char)); // allocation exe
+    char** argv = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation argv
+    char** envp = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation envp
 
     for (int i = 0; i < MAX_ARG; ++i) {
         argv[i] = (char*) calloc(MAX_ARG_LENGTH, sizeof(char)); // allocation argv[i]
