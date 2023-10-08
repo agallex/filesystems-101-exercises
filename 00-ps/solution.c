@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fs_malloc.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -27,17 +28,17 @@ void ps(void)
         return;
     }
 
-    char* exe = (char*) malloc(EXE_MAX_LENGTH); // allocation exe
-    char** argv = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation argv
-    char** envp = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation envp
+    char exe[MAX_ARG];
+    char* argv[MAX_ARG];
+    char* envp[MAX_ARG];
 
     for (int i = 0; i < MAX_ARG; ++i) {
-        argv[i] = (char*) malloc(MAX_ARG_LENGTH); // allocation argv[i]
-        envp[i] = (char*) malloc(MAX_ARG_LENGTH); // allocation envp[i]
+        argv[i] = fs_xmalloc(MAX_ARG_LENGTH); // allocation argv[i]
+        envp[i] = fs_xmalloc(MAX_ARG_LENGTH); // allocation envp[i]
     }
 
     struct dirent* proc_dirent;
-    char* current_path = (char*) malloc(MAX_FILEPATH_LENGTH); // allocation current_path
+    char current_path[MAX_FILEPATH_LENGTH];
     while ((proc_dirent = readdir(proc_directory)) != NULL) {
 
         char* p_end;
@@ -61,7 +62,7 @@ void ps(void)
             report_error(current_path, errno);
             continue;
         }
-        char** argv_report_process = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation for argv
+        char* argv_report_process[MAX_ARG]; // allocation for argv
         for (int i = 0; i < MAX_ARG; ++i) {
             size_t max_arg_length = MAX_ARG_LENGTH;
             if (getdelim(&argv[i], &max_arg_length, '\0', ptr_file1) != -1 && argv[i][0] != '\0') {
@@ -77,11 +78,10 @@ void ps(void)
         sprintf(current_path, "%s%s%s", PROC_PATH, proc_dirent->d_name, ENVIRON_PATH);
         FILE* ptr_file2;
         if ((ptr_file2 = fopen(current_path, "r")) == NULL) { // open file2
-            free(argv_report_process); // free argv
             report_error(current_path, errno);
             continue;
         }
-        char** envp_report_process = (char**) malloc(MAX_ARG * sizeof(char*));
+        char* envp_report_process[MAX_ARG];
         for (int i = 0; i < MAX_ARG; ++i) {
             size_t max_arg_length = MAX_ARG_LENGTH;
             if (getdelim(&envp[i], &max_arg_length, '\0', ptr_file2) != -1 && envp[i][0] != '\0') {
@@ -94,19 +94,12 @@ void ps(void)
         fclose(ptr_file2); // close file2
 
         report_process(pid, exe, argv_report_process, envp_report_process);
-        free(argv_report_process);
-        free(envp_report_process);
     }
 
-    free(current_path); // free current_path
     closedir(proc_directory); // close proc_directory
 
     for (int i = 0; i < MAX_ARG; ++i) {
-        free(argv[i]); // free argv[i]
-        free(envp[i]); // free envp[i]
+        fs_xfree(argv[i]); // free argv[i]
+        fs_xfree(envp[i]); // free envp[i]
     }
-
-    free(exe); // free exe
-    free(argv); // free argv
-    free(envp); // free envp
 }
