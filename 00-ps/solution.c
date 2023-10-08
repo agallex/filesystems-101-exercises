@@ -13,10 +13,10 @@
 #define MAX_FILEPATH_LENGTH 4096 // In linux, the maximum path length is 255 bytes
 #define EXE_MAX_LENGTH 4096
 
-const char* PROC_PATH = "/proc/";
-const char* EXE_PATH = "/exe";
-const char* CMDLINE_PATH = "/cmdline";
-const char* ENVIRON_PATH = "/environ";
+static const char* PROC_PATH = "/proc/";
+static const char* EXE_PATH = "/exe";
+static const char* CMDLINE_PATH = "/cmdline";
+static const char* ENVIRON_PATH = "/environ";
 
 void ps(void)
 {
@@ -27,17 +27,17 @@ void ps(void)
         return;
     }
 
-    char* exe = (char*) calloc(EXE_MAX_LENGTH, sizeof(char)); // allocation exe
-    char** argv = (char**) calloc(MAX_ARG, sizeof(char*)); // allocation argv
-    char** envp = (char**) calloc(MAX_ARG, sizeof(char*)); // allocation envp
+    char* exe = (char*) malloc(EXE_MAX_LENGTH); // allocation exe
+    char** argv = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation argv
+    char** envp = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation envp
 
     for (int i = 0; i < MAX_ARG; ++i) {
-        argv[i] = (char*) calloc(MAX_ARG_LENGTH, sizeof(char)); // allocation argv[i]
-        envp[i] = (char*) calloc(MAX_ARG_LENGTH, sizeof(char)); // allocation envp[i]
+        argv[i] = (char*) malloc(MAX_ARG_LENGTH); // allocation argv[i]
+        envp[i] = (char*) malloc(MAX_ARG_LENGTH); // allocation envp[i]
     }
 
     struct dirent* proc_dirent;
-    char* current_path = (char*) calloc(MAX_FILEPATH_LENGTH, sizeof(char)); // allocation current_path
+    char* current_path = (char*) malloc(MAX_FILEPATH_LENGTH); // allocation current_path
     while ((proc_dirent = readdir(proc_directory)) != NULL) {
 
         char* p_end;
@@ -61,7 +61,7 @@ void ps(void)
             report_error(current_path, errno);
             continue;
         }
-        char** argv_report_process = (char**) calloc(MAX_ARG, sizeof(char*)); // allocation for argv
+        char** argv_report_process = (char**) malloc(MAX_ARG * sizeof(char*)); // allocation for argv
         for (int i = 0; i < MAX_ARG; ++i) {
             size_t max_arg_length = MAX_ARG_LENGTH;
             if (getdelim(&argv[i], &max_arg_length, '\0', ptr_file1) != -1 && argv[i][0] != '\0') {
@@ -81,7 +81,7 @@ void ps(void)
             report_error(current_path, errno);
             continue;
         }
-        char** envp_report_process = (char**) calloc(MAX_ARG, sizeof(char*));
+        char** envp_report_process = (char**) malloc(MAX_ARG * sizeof(char*));
         for (int i = 0; i < MAX_ARG; ++i) {
             size_t max_arg_length = MAX_ARG_LENGTH;
             if (getdelim(&envp[i], &max_arg_length, '\0', ptr_file2) != -1 && envp[i][0] != '\0') {
