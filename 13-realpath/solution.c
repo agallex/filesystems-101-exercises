@@ -105,7 +105,8 @@ void abspath(const char* path) {
             }
             if (strlen(currentPath) > 0) {
                 if (link[lenLink - 1] != '/') {
-                    strcat(link, "/");
+                    link[link_len] = '/';
+                    link[link_len + 1] = '\0';
                 }
                 strcat(link, currentPath);
             }
