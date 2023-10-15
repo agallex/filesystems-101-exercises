@@ -98,6 +98,7 @@ void abspath(const char* path) {
                 report_error(copyRealPath, piecePath, errno);
                 return;
             }
+            link[lenLink] = '\0';
             if (link[0] == '/') {
                 realPath[0] = '\0';
             } else {
@@ -105,8 +106,7 @@ void abspath(const char* path) {
             }
             if (strlen(currentPath) > 0) {
                 if (link[lenLink - 1] != '/') {
-                    link[lenLink] = '/';
-                    link[lenLink + 1] = '\0';
+                    strcat(link, "/");
                 }
                 strcat(link, currentPath);
             }
