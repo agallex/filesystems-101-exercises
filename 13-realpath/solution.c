@@ -76,9 +76,9 @@ void abspath(const char* path) {
 
         strcat(realPath, "/");
 
-        char temporaryPath[MAX_FILEPATH_LENGTH] = "";
+        char temporaryPath[MAX_FILEPATH_LENGTH * 2] = "";
 
-        snprintf(temporaryPath, MAX_FILEPATH_LENGTH, "%s%s", realPath, piecePath);
+        snprintf(temporaryPath, MAX_FILEPATH_LENGTH * 2, "%s%s", realPath, piecePath);
 
         struct stat path_stat;
         if (lstat(temporaryPath, &path_stat) != 0) {
