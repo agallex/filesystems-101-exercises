@@ -39,7 +39,7 @@ void undoPath(char* realPath) {
 
 void abspath(const char* path) {
 
-    if (input == NULL || strlen(input) == 0) {
+    if (path == NULL || strlen(path) == 0) {
         return;
     }
 
