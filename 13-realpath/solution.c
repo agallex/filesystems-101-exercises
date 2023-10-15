@@ -38,12 +38,16 @@ void undoPath(char* realPath) {
 }
 
 void abspath(const char* path) {
+
+    if (input == NULL || strlen(input) == 0) {
+        return;
+    }
+
     char currentPath[MAX_FILEPATH_LENGTH] = "";
 
     if (path[0] == '/') {
         strcpy(currentPath, path + 1); // убираем / вначале, если он есть
-    }
-    else {
+    } else {
         strcpy(currentPath, path);
     }
 
@@ -59,8 +63,7 @@ void abspath(const char* path) {
             *ptrPiecePath = '\0';
             strcpy(piecePath, currentPath);
             memcpy(currentPath, ptrPiecePath + 1, strlen(ptrPiecePath + 1) + 1);
-        }
-        else {
+        } else {
             strcpy(piecePath, currentPath);
             currentPath[0] = '\0';
         }
@@ -102,8 +105,7 @@ void abspath(const char* path) {
             }
             if (link[0] == '/') {
                 realPath[0] = '\0';
-            }
-            else {
+            } else {
                 undoPath(realPath);
             }
             if (strlen(currentPath) > 0) {
