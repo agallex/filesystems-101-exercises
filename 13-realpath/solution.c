@@ -39,16 +39,12 @@ void undoPath(char* realPath) {
 
 void abspath(const char* path) {
 
-    if (path == NULL || strlen(path) == 0) {
-        return;
-    }
-
     char currentPath[MAX_FILEPATH_LENGTH] = "";
 
     if (path[0] == '/') {
-        strcpy(currentPath, path + 1); // убираем / вначале, если он есть
+        strncpy(currentPath, path + 1, MAX_FILEPATH_LENGTH); // убираем / вначале, если он есть
     } else {
-        strcpy(currentPath, path);
+        strncpy(currentPath, path, MAX_FILEPATH_LENGTH);
     }
 
     int len = strlen(currentPath);
@@ -61,10 +57,10 @@ void abspath(const char* path) {
 
         if (ptrPiecePath) {
             *ptrPiecePath = '\0';
-            strcpy(piecePath, currentPath);
+            strncpy(piecePath, currentPath, MAX_FILEPATH_LENGTH);
             memcpy(currentPath, ptrPiecePath + 1, strlen(ptrPiecePath + 1) + 1);
         } else {
-            strcpy(piecePath, currentPath);
+            strncpy(piecePath, currentPath, MAX_FILEPATH_LENGTH);
             currentPath[0] = '\0';
         }
         len = strlen(currentPath);
@@ -93,8 +89,8 @@ void abspath(const char* path) {
         }
 
         char copyRealPath[MAX_FILEPATH_LENGTH] = "";
-        strcpy(copyRealPath, realPath);
-        strcpy(realPath, temporaryPath);
+        strncpy(copyRealPath, realPath, MAX_FILEPATH_LENGTH);
+        strncpy(realPath, temporaryPath, MAX_FILEPATH_LENGTH);
 
         char link[MAX_FILEPATH_LENGTH];
         if (S_ISLNK(path_stat.st_mode)) {
@@ -114,7 +110,7 @@ void abspath(const char* path) {
                 }
                 strcat(link, currentPath);
             }
-            strcpy(currentPath, link);
+            strncpy(currentPath, link, MAX_FILEPATH_LENGTH);
         }
         len = strlen(currentPath);
     }
@@ -128,6 +124,5 @@ void abspath(const char* path) {
             strcat(realPath, "/");
         }
     }
-
     report_path(realPath);
 }
