@@ -46,11 +46,12 @@ void lsof(void) {
                 continue;
             }
             strncpy(ptr_on_end_file_path, files_dirent->d_name, MAX_FILEPATH_LENGTH - (strlen(PROC_PATH) + strlen(proc_dirent->d_name) + strlen(FD_PATH)));
-            if (readlink(file_path, lsof_path, MAX_FILEPATH_LENGTH) == -1) {
+            int len_lsof;
+            if ((len_lsof = readlink(file_path, lsof_path, MAX_FILEPATH_LENGTH)) == -1) {
                 report_error(file_path, errno);
                 continue;
             }
-            strcat(lsof_path, "\0");
+            lsof_path[len_lsof] = '\0';
             report_file(lsof_path);
         }
         closedir(files_directory);
