@@ -45,7 +45,7 @@ void lsof(void) {
             if (strcmp(files_dirent->d_name, ".") == 0 || strcmp(files_dirent->d_name, "..") == 0) {
                 continue;
             }
-            strncpy(ptr_on_end_file_path, files_dirent->d_name, MAX_FILEPATH_LENGTH);
+            strncpy(ptr_on_end_file_path, files_dirent->d_name, MAX_FILEPATH_LENGTH - (strlen(PROC_PATH) + strlen(proc_dirent->d_name) + strlen(FD_PATH)));
             if (readlink(file_path, lsof_path, MAX_FILEPATH_LENGTH) == -1) {
                 report_error(file_path, errno);
                 continue;
