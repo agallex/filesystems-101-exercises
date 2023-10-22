@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+
 #define QUEUE_CAPACITY 4
 #define BLOCKSIZE 256 * 1024
 
@@ -36,7 +37,7 @@ int read_q(struct io_uring* ring, size_t buf_size, off_t offset, int fd) {
 
     io_uring_prep_read(sqe, fd, req_data->buffer, buf_size, offset);
     io_uring_sqe_set_data(sqe, req_data);
-    
+
     return 0;
 }
 
@@ -66,8 +67,8 @@ int copy(int in, int out) {
     if (fstat(in, &st) < 0) {
         return -errno;
     }
-    off_t left_to_read = st.st_size;
-    off_t left_to_write = left_to_read;
+    off_t read_left = st.st_size;
+    off_t write_left = read_left;
     off_t offset = 0;
 
     int reads_q = 0;
@@ -75,27 +76,27 @@ int copy(int in, int out) {
 
     struct io_uring_cqe* cqe;
 
-    while (left_to_read || left_to_write || writes_q) {
+    while (read_left || write_left || writes_q) {
 
         int read_flag = 0;
-        while (left_to_read) {
+        while (read_left) {
 
             if (reads_q + writes_q == QUEUE_CAPACITY) {
                 break;
             }
 
             size_t buf_size;
-            if (left_to_read > BLOCKSIZE) {
+            if (read_left > BLOCKSIZE) {
                 buf_size = BLOCKSIZE;
             } else {
-                buf_size = left_to_read;
+                buf_size = read_left;
             }
 
             if (read_q(&ring, buf_size, offset, in)) {
                 break;
             }
 
-            left_to_read -= buf_size;
+            read_left -= buf_size;
             offset += buf_size;
             reads_q++;
             read_flag = 1;
@@ -109,7 +110,7 @@ int copy(int in, int out) {
 
         int get_cqe_flag = 0;
 
-        while (left_to_write || writes_q) {
+        while (write_left || writes_q) {
 
             if (!get_cqe_flag) {
                 if (io_uring_wait_cqe(&ring, &cqe) < 0) {
@@ -129,11 +130,11 @@ int copy(int in, int out) {
                 if (write_q(&ring, req_data, out)) {
                     break;
                 }
-                
+
                 io_uring_submit(&ring);
                 reads_q--;
                 writes_q++;
-                left_to_write -= req_data->buf_size;
+                write_left -= req_data->buf_size;
             } else {
                 free(req_data);
                 writes_q--;
