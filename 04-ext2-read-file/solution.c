@@ -39,7 +39,7 @@ int in_dir_copy(int img, int* buf, const int block_size, const int block, int* l
     void* another_buf = malloc(block_size);
 
     int k = 0;
-    while (buf[k] != 0 && *left > 0 && k < (block_size / (int)sizeof(int))) {
+    while (k < (block_size / (int)sizeof(int)) && buf[k] != 0 && *left > 0) {
         if (flag == 0) {
             int result;
             if ((result = dir_copy(img, another_buf, block_size, buf[k], left, out)) < 0) {
