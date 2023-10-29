@@ -29,7 +29,7 @@ int dir_report(int img, void* buf, const int block_size, const int block, int* l
     int shift = 0;
     while (entry && entry->inode != 0 && write_size > 0) {
 
-        memcpy(name, entry->name, EXT2_NAME_LEN);
+        memcpy(name, entry->name, entry->name_len);
         name[entry->name_len] = '\0';
 
         if (entry->file_type == EXT2_FT_DIR) {
