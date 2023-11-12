@@ -19,7 +19,7 @@ int dir_copy(int img, void* buf, const int block_size, const int block, int* lef
         write_size = *left;
     }
 
-    if (pread(img, buf, write_size, block_size * block) < block_size) {
+    if (pread(img, buf, write_size, block_size * block) < write_size) {
         return -errno;
     }
 
@@ -41,24 +41,17 @@ int in_dir_copy(int img, int* buf, const int block_size, const int block, int* l
     void* another_buf = malloc(block_size);
 
     int k = 0;
-    while (k < (block_size / (int)sizeof(int)) && *left > 0) {
+    int result = 0;
+    while (result >= 0 && k < (block_size / (int)sizeof(int)) && *left > 0) {
         if (flag == 0) {
-            int result;
-            if ((result = dir_copy(img, another_buf, block_size, buf[k], left, out)) < 0) {
-                free(another_buf);
-                return result;
-            }
+            result = dir_copy(img, another_buf, block_size, buf[k], left, out);
         } else {
-            int result;
-            if ((result = in_dir_copy(img, (int*)another_buf, block_size, buf[k], left, out, 0)) < 0) {
-                free(another_buf);
-                return result;
-            }
+            result = in_dir_copy(img, (int*)another_buf, block_size, buf[k], left, out, 0);
         }
         ++k;
     }
     free(another_buf);
-    return 0;
+    return result;
 }
 
 int dump_file(int img, int inode_nr, int out) {
