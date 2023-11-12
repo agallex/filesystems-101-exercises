@@ -11,16 +11,16 @@
 
 int dir_copy(int img, void* buf, const int block_size, const int block, int* left, int out) {
 
-    if (pread(img, buf, block_size, block_size * block) < block_size) {
-        return -errno;
-    }
-
     int write_size;
 
     if (block_size < *left) {
         write_size = block_size;
     } else {
         write_size = *left;
+    }
+
+    if (pread(img, buf, write_size, block_size * block) < block_size) {
+        return -errno;
     }
 
     if (write(out, buf, write_size) < write_size) {
