@@ -59,9 +59,9 @@ int dump_file(int img, int inode_nr, int out) {
     struct ext2_super_block super_block;
     int result = pread(img, &super_block, SUPERBLOCK_SIZE, SUPERBLOCK_OFFSET);
 
-    if (result <  SUPERBLOCK_SIZE) {
-        return -errno;
-    }
+//    if (result <  SUPERBLOCK_SIZE) {
+//        return -errno;
+//    }
 
     if (result < 0) {
         return -errno;
@@ -74,9 +74,9 @@ int dump_file(int img, int inode_nr, int out) {
 
     result = pread(img, &group_block, sizeof(group_block), block_size * (super_block.s_first_data_block + 1) + sizeof(group_block) * id_group);
 
-    if (result < sizeof(group_block)) {
-        return -errno;
-    }
+//    if (result < sizeof(group_block)) {
+//        return -errno;
+//    }
 
     if (result < 0) {
         return -errno;
@@ -87,9 +87,9 @@ int dump_file(int img, int inode_nr, int out) {
     struct ext2_inode inode;
     result = pread(img, &inode, sizeof(inode), block_size * group_block.bg_inode_table + super_block.s_inode_size * id_inode);
 
-    if (result < sizeof(inode)) {
-        return -errno;
-    }
+//    if (result < sizeof(inode)) {
+//        return -errno;
+//    }
 
     if (result < 0) {
         return -errno;
