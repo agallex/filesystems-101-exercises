@@ -16,17 +16,17 @@ struct btree {
 };
 
 struct Node *init_node(int leaf, unsigned int L) {
-    struct Node *top = (struct Node *) malloc(sizeof(struct Node));
+    struct Node *top = (struct Node *) calloc(1, sizeof(struct Node));
     top->leaf = leaf;
     top->min_degree = L;
     top->curr_values_cnt = 0;
-    top->values = (int *) malloc((2 * L) * sizeof(int));
-    top->links = (struct Node **) malloc((2 * L + 1) * sizeof(struct Node *));
+    top->values = (int *) calloc((2 * L), sizeof(int));
+    top->links = (struct Node **) calloc((2 * L + 1), sizeof(struct Node *));
     return top;
 }
 
 struct btree *btree_alloc(unsigned int L) {
-    struct btree *b_tree = (struct btree *) malloc(sizeof(struct btree));
+    struct btree *b_tree = (struct btree *) calloc(1, sizeof(struct btree));
     b_tree->root = NULL;
     b_tree->min_degree = L;
     return b_tree;
@@ -334,7 +334,7 @@ struct btree_iter {
 };
 
 struct btree_iter *btree_iter_start(struct btree *t) {
-    struct btree_iter *iter = (struct btree_iter *) malloc(sizeof(struct btree_iter));
+    struct btree_iter *iter = (struct btree_iter *) calloc(1, sizeof(struct btree_iter));
     int counter = count_value(t->root);
     iter->counter = counter;
     iter->value_pointers = calloc(counter, sizeof(int));
