@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/grpc"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"fs101ex/pkg/gen/hashsvc"
 	"fs101ex/pkg/gen/parhashsvc"
